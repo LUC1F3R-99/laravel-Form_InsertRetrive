@@ -17,4 +17,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::post('/store', StudentController::class, 'store')->name('welcome.form.data.saved');
+Route::post('/store', [StudentController::class, 'store'])->name('welcome.form.data.saved');
