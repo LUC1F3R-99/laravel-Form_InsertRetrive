@@ -19,24 +19,9 @@
                         data-bs-target="#exampleModal">ADD</button>
                 </div>
                 <div class="card-body">
-                    <table id="myTable" class="display">
-                        <thead>
-                            <tr>
-                                <th>Column 1</th>
-                                <th>Column 2</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Row 1 Data 1</td>
-                                <td>Row 1 Data 2</td>
-                            </tr>
-                            <tr>
-                                <td>Row 2 Data 1</td>
-                                <td>Row 2 Data 2</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div id="show_all_student_data">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,7 +78,6 @@
     <script>
         $(document).ready(function() {
 
-            $('#myTable').DataTable();
             $('#add_newStudent_form').submit(function(e) {
                 e.preventDefault();
                 const fd = new FormData(this);
@@ -117,6 +101,7 @@
                             $('#close_stu_btn').text('Close');
                             $('#add_newStudent_form')[0].reset();
                             $('#exampleModal').modal('hide');
+                            fetchAllStudent();
                         } else {
                             swal("Error!", "Failed to add student.", "error");
                         }
@@ -126,6 +111,20 @@
                     }
                 });
             });
+
+            fetchAllStudent();
+
+            function fetchAllStudent() {
+                $.ajax({
+                    url: "{{ route('welcome.form.data.fetched') }}",
+                    method: 'get',
+                    success: function(response) {
+                        $('#show_all_student_data').html(response);
+                        $('#myTable').DataTable();
+                    }
+                });
+            }
+
         });
     </script>
 </body>

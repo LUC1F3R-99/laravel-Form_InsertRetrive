@@ -18,3 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::post('/store', [StudentController::class, 'store'])->name('welcome.form.data.saved');
+Route::get('/fetch', [StudentController::class, 'fetch'])->name('welcome.form.data.fetched');
