@@ -38,16 +38,16 @@ class StudentController extends Controller
     }
 
     public function fetch()
-{
-    // Retrieve all students in descending order by their IDs (assuming ID is auto-incrementing)
-    $students = Student::orderBy('id', 'desc')->get();
+    {
+        // Retrieve all students in descending order by their IDs (assuming ID is auto-incrementing)
+        $students = Student::orderBy('id', 'desc')->get();
 
-    if ($students->isEmpty()) {
-        return "<h3 align='center'>Nothing to show</h3>";
-    }
+        if ($students->isEmpty()) {
+            return "<h3 align='center'>Nothing to show</h3>";
+        }
 
-    // Prepare the HTML response
-    $response = "<table id='myTable' class='display'>
+        // Prepare the HTML response
+        $response = "<table id='myTable' class='display'>
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -60,20 +60,27 @@ class StudentController extends Controller
                     </thead>
                     <tbody>";
 
-    // Loop through each student
-    foreach ($students as $key => $student) {
-        $response .= "<tr>
+        // Loop through each student
+        foreach ($students as $key => $student) {
+            $response .= "<tr>
                         <td>" . ($key + 1) . "</td>
                         <td> <img src='" . asset('storage/images/' . $student->avatar) . "' width='50px' height='40px' class='img-thumbnail rounded-circle' style='border-color: transparent;'></td>
                         <td>" . $student->first_name . "</td>
                         <td>" . $student->last_name . "</td>
                         <td>" . $student->email . "</td>
+                        <td> <a href='' id='" . $student->id . "'class='StudentEdit' data-bs-toggle='modal'
+                        data-bs-target='#editModal' ><button class='btn btn-primary'>Edit </button>|</a><a href='{{ route=('welcome.form.data.delete')}}'><button class='btn btn-danger'>Delete</button></a></td>
                     </tr>";
+        }
+
+        $response .= "</tbody></table>";
+
+        return $response;
     }
 
-    $response .= "</tbody></table>";
-
-    return $response;
-}
+    public function edit(Request $request)
+    {
+        echo $request;
+    }
 
 }
