@@ -30,8 +30,7 @@
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form action="{{ route('welcome.form.data.saved') }}" method="post" enctype="multipart/form-data"
-                    id="add_newStudent_form">
+                <form action="#" method="post" enctype="multipart/form-data" id="add_newStudent_form">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -72,8 +71,7 @@
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form action="{{ route('welcome.form.data.saved') }}" method="post" enctype="multipart/form-data"
-                    id="add_newStudent_form">
+                <form action="#" method="post" enctype="multipart/form-data" id="update_newStudent_form">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -81,30 +79,34 @@
                     <div class="modal-body">
                         {{-- -------------------------------------------from-body------------------------------------------- --}}
                         @csrf
+                        <input type="hidden" name="user_id" id="user_id">
                         <div class="row g-3">
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="First name"
+                                <input type="text" id="fname" class="form-control" placeholder="First name"
                                     aria-label="First name" name="fname">
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="Last name"
+                                <input type="text" id="lname" class="form-control" placeholder="Last name"
                                     aria-label="Last name" name="lname">
                             </div>
                             <div>
-                                <input type="email" class="form-control" id="inputAddress" placeholder="E-mail"
-                                    name="mail">
+                                <input type="email" id="email" class="form-control" id="inputAddress"
+                                    placeholder="E-mail" name="mail">
                             </div>
-                            <div class="input-group">
-                                <input type="file" class="form-control" id="inputGroupFile04"
-                                    aria-describedby="inputGroupFileAddon04" aria-label="Upload" name="avatar">
+                            <div class="col">
+                                <div class="input-group">
+                                    <div id="avatar"></div>
+                                    <input type="file" id="avatar" class="form-control" id="inputGroupFile04"
+                                        aria-describedby="inputGroupFileAddon04" aria-label="Upload" name="avatar">
+                                </div>
                             </div>
                         </div>
                         {{-- -------------------------------------------from-body------------------------------------------- --}}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                            id="close_stu_btn">Close</button>
-                        <button type="submit" class="btn btn-primary" id="add_stu_btn">Add Student</button>
+                            id="editclose_stu_btn">Close</button>
+                        <button type="submit" class="btn btn-primary" id="edit_stu_btn">Update</button>
                     </div>
                 </form>
             </div>
@@ -117,6 +119,7 @@
     </script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
 
@@ -136,7 +139,11 @@
                     dataType: 'json',
                     success: function(response) {
                         if (response.status == 200) {
-                            swal("Success!", "Student added successfully.", "success");
+                            Swal.fire(
+                                'Added !',
+                                'Student Added successfully',
+                                'success'
+                            )
                             $('#add_newStudent_form')[0].reset();
                             $('#exampleModal').modal('hide');
                             $('#add_stu_btn').text('Add Student');
@@ -166,11 +173,57 @@
                         id: id,
                         _token: '{{ csrf_token() }}'
                     },
-                    success:function(response){
-                        console.log(response);
+                    success: function(response) {
+                        $("#fname").val(response.first_name);
+                        $("#lname").val(response.last_name);
+                        $("#email").val(response.email);
+                        $("#avatar").html(
+                            `<img src="storage/images/${response.avatar}" width="10%" class="img-fluid img-thumbnail">`
+                        );
+                        $('#user_id').val(response.id);
+                    }
+
+                });
+            });
+
+            $('#update_newStudent_form').submit(function(e) {
+                e.preventDefault();
+                const fd = new FormData(this);
+                $('#edit_stu_btn').text('updating . . .');
+                $('#editclose_stu_btn').text('Stop');
+
+                $.ajax({
+                    url: "{{ route('welcome.form.data.update') }}",
+                    method: "POST",
+                    data: fd,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status == 200) {
+                            Swal.fire(
+                                'Updated!',
+                                'Student Deatails updated successfully',
+                                'success'
+                            )
+                            $('#update_newStudent_form')[0].reset();
+                            $('#editModal').modal('hide');
+                            $('#edit_stu_btn').text('Add Student');
+                            $('#editclose_stu_btn').text('Close');
+                            $('#update_newStudent_form')[0].reset();
+                            $('#editModal').modal('hide');
+                            fetchAllStudent();
+                        } else {
+                            swal("Error!", "Failed to add student.", "error");
+
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        swal("Error!", "Failed to add student: " + error, "error");
                     }
                 });
-            })
+            });
 
             fetchAllStudent();
 
@@ -184,6 +237,49 @@
                     }
                 });
             }
+
+            $(document).on('click', '.deleteBtn', function(e) {
+                e.preventDefault();
+
+                let id = $(this).attr('id');
+                let csrf = '{{ csrf_token() }}';
+                Swal.fire({
+                    title: 'Are you sure ?',
+                    text: "You want to delete this",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'red',
+                    confirmButtonText: 'Delete',
+                    cancelButtonText: 'cancel',
+                    cancelButtonColor: 'blue',
+                }).then((result => {
+                    if(result.isConfirmed){
+                        $.ajax({
+                            url: '{{ route('delete') }}',
+                            method: 'delete',
+                            data:{
+                                id: id,
+                                _token:csrf
+                            },
+                            success: function(response){
+                                console.log(response);
+                                Swal.fire(
+                                    'Deleted !',
+                                    'Student file successfully deleted',
+                                    'success'
+                                );
+                                fetchAllStudent();
+                            }
+
+                        });
+                    }
+                }));
+
+
+
+            });
+
+
         });
     </script>
 </body>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -63,13 +64,13 @@ class StudentController extends Controller
         // Loop through each student
         foreach ($students as $key => $student) {
             $response .= "<tr>
-                        <td>" . ($key + 1) . "</td>
+                        <td>" . $student->id . "</td>
                         <td> <img src='" . asset('storage/images/' . $student->avatar) . "' width='50px' height='40px' class='img-thumbnail rounded-circle' style='border-color: transparent;'></td>
                         <td>" . $student->first_name . "</td>
                         <td>" . $student->last_name . "</td>
                         <td>" . $student->email . "</td>
                         <td> <a href='' id='" . $student->id . "'class='StudentEdit' data-bs-toggle='modal'
-                        data-bs-target='#editModal' ><button class='btn btn-primary'>Edit </button>|</a><a href='{{ route=('welcome.form.data.delete')}}'><button class='btn btn-danger'>Delete</button></a></td>
+                        data-bs-target='#editModal' ><button class='btn btn-primary'>Edit </button>|</a><a href='#' id='" . $student->id . "' class='deleteBtn' ><button class='btn btn-danger'>Delete</button></a></td>
                     </tr>";
         }
 
@@ -80,7 +81,63 @@ class StudentController extends Controller
 
     public function edit(Request $request)
     {
-        echo $request;
+        $userId = $request->id;
+
+        $student = Student::find($userId);
+        return response()->json($student);
+    }
+
+    public function update(Request $request)
+    {
+
+        $student = '';
+
+        $student = Student::find($request->user_id);
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $filename = "IMG-" . time() . "." . $request->file("avatar")->getClientOriginalExtension();
+            $file->storeAs('public/images', $filename);
+
+            if($student->avatar){
+                Storage::delete('public/images/' . $student->avatar);
+            }
+        } else {
+            $filename = $student->avatar;
+        }
+
+        $stuData = [
+            'first_name' => $request->fname,
+            'last_name' => $request->lname,
+            'email' => $request->mail,
+            'avatar' => $filename,
+        ];
+
+        $student->update($stuData);
+        return response()->json([
+            'status' => 200,
+        ]);
+
+    }
+
+    function delete(Request $req)
+    {
+        $id = $req->id;
+        $studentData = Student::find($id);
+
+        if(Storage::delete('public/images/'. $studentData->avatar)) {
+
+            Student::destroy($id);
+            return response()->json([
+                'status' => 'ok',
+            ]);
+        } else{
+            return response()->json([
+                'status' => 'error',
+            ]);
+        }
+
+
+
     }
 
 }
