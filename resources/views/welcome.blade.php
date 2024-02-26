@@ -160,10 +160,7 @@
                     }
                 });
             });
-
-
-
-
+            
             $(document).on('click', '.StudentEdit', function(e) {
                 e.preventDefault();
                 var id = $(this).attr('id');
@@ -182,7 +179,6 @@
                         );
                         $('#user_id').val(response.id);
                     }
-
                 });
             });
 
@@ -216,7 +212,6 @@
                             fetchAllStudent();
                         } else {
                             swal("Error!", "Failed to add student.", "error");
-
                         }
                     },
                     error: function(xhr, status, error) {
@@ -253,15 +248,15 @@
                     cancelButtonText: 'cancel',
                     cancelButtonColor: 'blue',
                 }).then((result => {
-                    if(result.isConfirmed){
+                    if (result.isConfirmed) {
                         $.ajax({
-                            url: '{{ route('delete') }}',
+                            url: '{{ route('welcome.form.data.delete') }}',
                             method: 'delete',
-                            data:{
+                            data: {
                                 id: id,
-                                _token:csrf
+                                _token: csrf
                             },
-                            success: function(response){
+                            success: function(response) {
                                 console.log(response);
                                 Swal.fire(
                                     'Deleted !',
@@ -270,16 +265,10 @@
                                 );
                                 fetchAllStudent();
                             }
-
                         });
                     }
                 }));
-
-
-
             });
-
-
         });
     </script>
 </body>

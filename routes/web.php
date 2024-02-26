@@ -21,4 +21,4 @@ Route::post('/store', [StudentController::class, 'store'])->name('welcome.form.d
 Route::get('/fetch', [StudentController::class, 'fetch'])->name('welcome.form.data.fetched');
 Route::get('/edit', [StudentController::class, 'edit'])->name('welcome.form.data.edit');
 Route::post('/update', [StudentController::class, 'update'])->name('welcome.form.data.update');
-Route::delete('/delete', [StudentController::class,'delete'])->name('delete');
+Route::delete('/delete', [StudentController::class,'delete'])->name('welcome.form.data.delete');
