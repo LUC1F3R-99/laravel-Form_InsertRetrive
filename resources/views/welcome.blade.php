@@ -26,7 +26,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -122,7 +121,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-
             $('#add_newStudent_form').submit(function(e) {
                 e.preventDefault();
                 const fd = new FormData(this);
@@ -160,7 +158,7 @@
                     }
                 });
             });
-            
+
             $(document).on('click', '.StudentEdit', function(e) {
                 e.preventDefault();
                 var id = $(this).attr('id');
