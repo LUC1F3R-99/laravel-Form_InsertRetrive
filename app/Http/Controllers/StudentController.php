@@ -64,7 +64,7 @@ class StudentController extends Controller
         // Loop through each student
         foreach ($students as $key => $student) {
             $response .= "<tr>
-                        <td>" . $student->id . "</td>
+                        <td>" . $key +1 . "</td>
                         <td> <img src='" . asset('storage/images/' . $student->avatar) . "' width='50px' height='40px' class='img-thumbnail rounded-circle' style='border-color: transparent;'></td>
                         <td>" . $student->first_name . "</td>
                         <td>" . $student->last_name . "</td>
